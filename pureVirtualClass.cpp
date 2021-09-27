@@ -3,8 +3,14 @@ using namespace std;
 class Animal {
 public:
 	virtual ~Animal() {} //가상 소멸자
-	virtual void SoundSpeak() = 0;
+	virtual void SoundSpeak() = 0;	//순수가상 클래스로 객체를 만들 수 없다!
 	virtual void EatDiets(const char* eat) const = 0;
+	virtual void SoundSpeak() {
+		
+	}
+	virtual void EatDiets(const char* eat)const {
+		
+	}
 
 };
 class Dog : public Animal {
@@ -35,4 +41,6 @@ int main(void) {
 	Cat cat;
 	cat.SoundSpeak();
 	cat.EatDiets("고양이 사료");
-}
+
+	
+} 
