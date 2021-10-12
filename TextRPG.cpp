@@ -1,8 +1,14 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include<time.h>
-
+#include <Windows.h>
 
 using namespace std;
+void gotoxy(int x, int y) {
+	COORD m;
+	m.X = x;
+	m.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), m);
+}
 enum MAIN_MENU {
 	MM_NONE,
 	MM_MAP,
@@ -43,6 +49,11 @@ enum STORE_MENU {
 	SM_ARMOR,
 	SM_BACK
 };
+enum EQUIP {
+	EQ_WEAPON,
+	EQ_ARMOR,
+	EQ_MAX
+};
 
 #define NAME_SIZE 32
 #define ITEM_DESC_LENGTH 512
@@ -74,13 +85,15 @@ struct _Player {
 	int iAttackMin;
 	int iAttackMax;
 	int iArmorMin;
-	int iArmorMax;	//¹æ¾î·Â,Ã¼·Â
+	int iArmorMax;	//ë°©ì–´ë ¥,ì²´ë ¥
 	int iHP;
 	int iHPMax;
 	int iMP;
 	int iMPMax;
 	int iExp;
 	int iLevel;
+	_Item tEquip[EQ_MAX];
+	bool bEquip[EQ_MAX];
 	_Inventory tInventory;
 };
 struct _Monster {		//_tagMonster
@@ -103,20 +116,87 @@ int main() {
 
 	srand((unsigned int)time(0));
 
-	_Player tPlayer = {};
-
-	cout << "ÀÌ¸§ : ";
+	_Player tPlayer = {}; //null
+	/*system("mode con cols=119 lines=30 | title Text RPG");*/
+	cout << "\n\n\n\n";		
+	cout << "\t\t"; cout << "@@@@@@@@@@   @@@@@@@@@   @@@   @@@   @@@@@@@@@@   @@@@@@@@    @@@@@@@@   @@@@@@@\n";
+	cout << "\t\t"; cout << "    @        @             @   @         @        @      @    @      @   @          \n";
+	cout << "\t\t"; cout << "    @        @              @ @          @        @       @   @@@@@@@@   @         \n";
+	cout << "\t\t"; cout << "    @        @@@@@@@@@      @@@          @        @       @   @          @    @@@@ \n";
+	cout << "\t\t"; cout << "    @        @              @ @          @        @@@@@@@@@   @          @       @  \n";
+	cout << "\t\t"; cout << "    @        @             @   @         @        @       @   @          @       @  \n";
+	cout << "\t\t"; cout << "    @        @@@@@@@@@   @@@   @@@       @         @      @   @          @@@@@@@@\n\n\n\n\n";
+	cout << "\t\t"; cout << "                          ê²Œì„ì„ ì‹œì‘í•˜ë ¤ë©´ <Enter>ë¥¼ ëˆ„ë¥´ì„¸ìš”.\n\n\n\n\n\n\n";
+	cout << "\t\t"; cout << "                              TextRPG.0 By MinjeoungSeo\n";
+	getchar(); // ì•„ë¬´í‚¤ ì…ë ¥ ê¸°ë‹¤ë¦¼
+	
+	system("cls");
+	cout << "ì´ë¦„ì„ ì…ë ¥í•´ ì£¼ì„¸ìš”." << endl;
+	
 	cin.getline(tPlayer.strName, NAME_SIZE - 1);
+	system("cls");
+	cout << "ì–´ëŠ ì™•êµ­ì— ì •ì‹ ë‚˜ê°„ ì™•ì´ ê²Œì„ì„ ë§Œë“¤ë©° ì‚´ê³  ìˆì—ˆìŠµë‹ˆë‹¤." << endl;
+	cout << "ê·¸ëŸ°ë° ê°‘ìê¸° ì™•ì´ ì½”ë”©ì´ ë„ˆë¬´ë‚˜ë„ í•˜ê¸° ì‹«ì–´ì ¸ì„œ ë§ë ¹ì„ ì†Œí™˜í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+	cout << "í•˜ì§€ë§Œ ë§ë ¹ë„ ì—­ì‹œë‚˜ ë†ë•¡ì´ë§Œ ì³¤ê³ , ê²°êµ­ ì™•êµ­ì€ ë©¸ë§í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
 
+	cout << "ëª‡ ì‹­ë…„ì´ íë¥´ê³ ..." << endl;
+	cout << "ìš©ì‚¬ " << tPlayer.strName << "<ì€>ëŠ” ì™•êµ­ì˜ ìŠí˜€ì§„ ë³´ë¬¼ë“¤ì„ ì°¾ì•„ ëª¨í—˜ì„ ì‹œì‘í•©ë‹ˆë‹¤." << endl;
+	cout << endl << endl << "í™˜ì˜í•©ë‹ˆë‹¤. ìš©ì‚¬ " << tPlayer.strName << "ë‹˜" << endl<<endl<<endl;
+	
 	int iJob = JOB_NONE;
-
+	
 	while (iJob == JOB_NONE)
 	{
-		system("cls");
-		cout << "1. ±â»ç" << endl;
-		cout << "2. ±Ã¼ö" << endl;
-		cout << "3. ¸¶¹ı»ç" << endl;
-		cout << "Á÷¾÷À» ¼±ÅÃÇÏ¼¼¿ä : ";
+		system("pause");
+		cout << endl;
+		
+		/*cout << "____________________$$$$" << endl;
+		cout << "______$$$$$$$$$_____$$$$$$" << endl;
+		cout << "____$$$$$$$$$$$$$___$$$$$$" << endl;
+		cout << "___$$$$$$$$$$$$$$$$___$$" << endl;
+		cout << "____$$$$_____$$$$$$$" << endl;
+		cout << "_____$$$$__$$$$$$$$$" << endl;
+		cout << "______$$$$$$$$$_$$$$" << endl;
+		cout << "______$$$$$$____$$$$" << endl;
+		cout << "____$$$$$$$_____$$$$" << endl;
+		cout << "___$$$$$__$$____$$$$" << endl;
+		cout << "___$$$$____$$___$$$$" << endl;
+		cout << "___$$$$_____$$__$$$$" << endl;
+		cout << "____$$$$_____$$__$$" << endl;
+		cout << "____$$$$$_____$$$" << endl;
+		cout << "______$$$$_____$$$" << endl;
+		cout << "_____$$$$$$$_____$$" << endl;
+		cout << "_____$$$$$$$______$$" << endl;
+		cout << "____$$$$$$$$_______$$" << endl;
+		cout << "___$$$$_$$$$________$$" << endl;
+		cout << "___$$$$_$$$$_________$$$$0" << endl;*/
+		cout << "ì§ì—…ì„ ì„ íƒí•˜ì„¸ìš” : "<<endl;
+		cout << "1 : ê¸°ì‚¬\t";
+		cout << "2 : ê¶ìˆ˜\t";
+		cout << "3 : ë§ˆë²•ì‚¬"<<endl;
+
+		/*gotoxy(90, 10);
+		cout << "                 .," << endl;	
+		cout << endl;
+		gotoxy(90, 10);
+		cout << "       .    ____/__," << endl;
+		gotoxy(90, 10);
+		cout << "     .' \  / \==\```" << endl;
+		cout << "    /    \ 77 \ |" << endl;
+		cout << "    /_.----\\__,-----." << endl;
+		cout << "<--(\_|_____<__|_____/"<<endl;
+		cout << "    \  ````/|   ``/```" << endl;
+		cout << "     `.   / |    I|" << endl;
+		cout << "       `./  |____I|" << endl;
+		cout << "            !!!!!!!" << endl;
+		cout << "            | | I |" << endl;
+		cout << "            | | I |" << endl;
+		cout << "            \ \ I |" << endl;
+		cout << "            | | I |" << endl;
+		cout << "           _|_|_I_|" << endl;
+		cout << "          /__/____|  " << endl;
+		*/
+
 		cin >> iJob;
 
 		if (cin.fail()) {
@@ -134,7 +214,7 @@ int main() {
 
 	switch (tPlayer.eJob) {
 	case JOB_KNIGHT:
-		strcpy_s(tPlayer.strJobName, "±â»ç");
+		strcpy_s(tPlayer.strJobName, "ê¸°ì‚¬");
 		tPlayer.iAttackMin = 5;
 		tPlayer.iAttackMax = 10;
 		tPlayer.iArmorMin = 15;
@@ -146,7 +226,7 @@ int main() {
 
 
 	case JOB_ARCHER:
-		strcpy_s(tPlayer.strJobName, "±Ã¼ö");
+		strcpy_s(tPlayer.strJobName, "ê¶ìˆ˜");
 		tPlayer.iAttackMin = 10;
 		tPlayer.iAttackMax = 15;
 		tPlayer.iArmorMin = 10;
@@ -157,7 +237,7 @@ int main() {
 		tPlayer.iMPMax = 200; break;
 
 	case JOB_WIZARD:
-		strcpy_s(tPlayer.strJobName, "¸¶¹ı»ç");
+		strcpy_s(tPlayer.strJobName, "ë§ˆë²•ì‚¬");
 		tPlayer.iAttackMin = 15;
 		tPlayer.iAttackMax = 20;
 		tPlayer.iArmorMin = 5;
@@ -167,11 +247,11 @@ int main() {
 		tPlayer.iMP = 300;
 		tPlayer.iMPMax = 300;  break;
 	}
-	//¸ó½ºÅÍ »ı¼º
+	//ëª¬ìŠ¤í„° ìƒì„±
 	_Monster tMonsterArr[MT_BACK - 1]{};
 
-	//°íºí¸° »ı¼º
-	strcpy_s(tMonsterArr[0].strName, "°íºí¸°");
+	//ê³ ë¸”ë¦° ìƒì„±
+	strcpy_s(tMonsterArr[0].strName, "ê³ ë¸”ë¦°");
 	tMonsterArr[0].iAttackMin = 20;
 	tMonsterArr[0].iAttackMax = 30;
 	tMonsterArr[0].iArmorMin = 2;
@@ -187,8 +267,8 @@ int main() {
 
 
 
-	//Æ®·Ñ »ı¼º
-	strcpy_s(tMonsterArr[1].strName, "Æ®·Ñ");
+	//íŠ¸ë¡¤ ìƒì„±
+	strcpy_s(tMonsterArr[1].strName, "íŠ¸ë¡¤");
 	tMonsterArr[1].iAttackMin = 80;
 	tMonsterArr[1].iAttackMax = 130;
 	tMonsterArr[1].iArmorMin = 60;
@@ -202,8 +282,8 @@ int main() {
 	tMonsterArr[1].iGoldMin = 6000;
 	tMonsterArr[1].iGoldMax = 8000;
 
-	//µå·¡°ï »ı¼º
-	strcpy_s(tMonsterArr[2].strName, "µå·¡°ï");
+	//ë“œë˜ê³¤ ìƒì„±
+	strcpy_s(tMonsterArr[2].strName, "ë“œë˜ê³¤");
 	tMonsterArr[2].iAttackMin = 250;
 	tMonsterArr[2].iAttackMax = 500;
 	tMonsterArr[2].iArmorMin = 200;
@@ -217,75 +297,78 @@ int main() {
 	tMonsterArr[2].iGoldMin = 20000;
 	tMonsterArr[2].iGoldMax = 50000;
 
-	//»óÁ¡¿¡¼­ ÆÇ¸ÅÇÒ ¾ÆÀÌÅÛ ¸ñ·ÏÀ» »ı¼ºÇÑ´Ù.
+	//ìƒì ì—ì„œ íŒë§¤í•  ì•„ì´í…œ ëª©ë¡ì„ ìƒì„±í•œë‹¤.
 	_Item	tStoreWeapon[STORE_WEAPON_MAX] = {};
 	_Item	tStoreArmor[STORE_ARMOR_MAX] = {};
 	
 
-	//°¢ ¾ÆÀÌÅÛ Á¤º¸¸¦ ¼³Á¤ÇÑ´Ù
-	strcpy_s(tStoreWeapon[0].strName, "¸ñ°Ë");
-	strcpy_s(tStoreWeapon[0].strTypeName, "¹«±â");
-	strcpy_s(tStoreWeapon[0].strDesc, "³ª¹«·Î ¸¸µçÄ®");
+	//(ë¬´ê¸°ìƒì ) ê° ì•„ì´í…œ ì •ë³´ë¥¼ ì„¤ì •í•œë‹¤
+	strcpy_s(tStoreWeapon[0].strName, "ëª©ê²€");
+	strcpy_s(tStoreWeapon[0].strTypeName, "ë¬´ê¸°");
+	strcpy_s(tStoreWeapon[0].strDesc, "ë‚˜ë¬´ë¡œ ë§Œë“ ì¹¼");
 	tStoreWeapon[0].eType = IT_WEAPON;
 	tStoreWeapon[0].iMin = 5;
 	tStoreWeapon[0].iMax = 20;
 	tStoreWeapon[0].iPrice = 4000;
 	tStoreWeapon[0].iSell = 1500;
 
-	strcpy_s(tStoreWeapon[1].strName, "¸ñ°Ë");
-	strcpy_s(tStoreWeapon[1].strTypeName, "¹«±â");
-	strcpy_s(tStoreWeapon[1].strDesc, "½Ö½ÖÇÑ È°");
+	strcpy_s(tStoreWeapon[1].strName, "í™œ");
+	strcpy_s(tStoreWeapon[1].strTypeName, "ë¬´ê¸°");
+	strcpy_s(tStoreWeapon[1].strDesc, "ìŒìŒí•œ í™œ");
 	tStoreWeapon[1].eType = IT_WEAPON;
 	tStoreWeapon[1].iMin = 20;
 	tStoreWeapon[1].iMax = 40;
 	tStoreWeapon[1].iPrice = 7000;
 	tStoreWeapon[1].iSell = 3500;
 
-	strcpy_s(tStoreWeapon[2].strName, "ÁöÆÎÀÌ");
-	strcpy_s(tStoreWeapon[2].strTypeName, "¹«±â");
-	strcpy_s(tStoreWeapon[2].strDesc, "³ª¹«·Î ¸¸µçÄ®");
+	strcpy_s(tStoreWeapon[2].strName, "ì§€íŒ¡ì´");
+	strcpy_s(tStoreWeapon[2].strTypeName, "ë¬´ê¸°");
+	strcpy_s(tStoreWeapon[2].strDesc, "ë§ˆë²• ì§€íŒ¡ì´");
 	tStoreWeapon[2].eType = IT_WEAPON;
 	tStoreWeapon[2].iMin = 90;
 	tStoreWeapon[2].iMax = 150;
 	tStoreWeapon[2].iPrice = 30000;
 	tStoreWeapon[2].iSell = 15000;
 
-	////¹æ¾î±¸Á¤º¸ ¼³Á¤
-	//strcpy_s(tStoreArmor[0].strName, "Ãµ°©¹Ù");
-	//strcpy_s(tStoreWeapon[0].strTypeName, "¹æ¾î±¸");
-	//strcpy_s(tStoreWeapon[0].strDesc, "Âõ°ÜÁø °©¿Ê");
-	//tStoreWeapon[0].eType = IT_WEAPON;
-	//tStoreWeapon[0].iMin = 2;
-	//tStoreWeapon[0].iMax = 6;
-	//tStoreWeapon[0].iPrice = 1000;
-	//tStoreWeapon[0].iSell = 500;
 
-	//strcpy_s(tStoreWeapon[1].strName, "°¡Á×°©¹Ù");
-	//strcpy_s(tStoreWeapon[1].strTypeName, "¹æ¾î±¸");
-	//strcpy_s(tStoreWeapon[1].strDesc, "µ¿¹°ÀÇ °¡Á×À¸·Î ¸¸µç Áú±ä °©¿Ê");
-	//tStoreWeapon[1].eType = IT_WEAPON;
-	//tStoreWeapon[1].iMin = 10;
-	//tStoreWeapon[1].iMax = 20;
-	//tStoreWeapon[1].iPrice = 7000;
-	//tStoreWeapon[1].iSell = 3500;
 
-	//strcpy_s(tStoreWeapon[2].strName, "Ã¶°©¹Ù");
-	//strcpy_s(tStoreWeapon[2].strTypeName, "¹æ¾î±¸");
-	//strcpy_s(tStoreWeapon[2].strDesc, "±¤ÅÃ°ú À±±â°¡ ³ª´Â °í±ŞÃ¶Á¦·Î ¸¸µç°©¿Ê");
-	//tStoreWeapon[2].eType = IT_WEAPON;
-	//tStoreWeapon[2].iMin = 50;
-	//tStoreWeapon[2].iMax = 250;
-	//tStoreWeapon[2].iPrice = 40000;
-	//tStoreWeapon[2].iSell = 15000;
+	//(ë°©ì–´êµ¬ ìƒì ) ê° ì•„ì´í…œ ì •ë³´ë¥¼ ì„¤ì •í•œë‹¤
+	strcpy_s(tStoreArmor[0].strName, "ì²œê°‘ì˜·");
+	strcpy_s(tStoreArmor[0].strTypeName, "ë°©ì–´êµ¬");
+	strcpy_s(tStoreArmor[0].strDesc, "ì²œìœ¼ë¡œ ë§Œë“  í—ˆì ‘í•œ ê°‘ì˜·");
+	tStoreArmor[0].eType = IT_ARMOR;
+	tStoreArmor[0].iMin = 2;
+	tStoreArmor[0].iMax = 5;
+	tStoreArmor[0].iPrice = 1000;
+	tStoreArmor[0].iSell = 500;
+
+	strcpy_s(tStoreArmor[1].strName, "ê°€ì£½ê°‘ì˜·");
+	strcpy_s(tStoreArmor[1].strTypeName, "ë°©ì–´êµ¬");
+	strcpy_s(tStoreArmor[1].strDesc, "ë™ë¬¼ ê°€ì£½ìœ¼ë¡œ ë§Œë“  ì§ˆê¸´ ê°‘ì˜·");
+	tStoreArmor[1].eType = IT_ARMOR;
+	tStoreArmor[1].iMin = 10;
+	tStoreArmor[1].iMax = 20;
+	tStoreArmor[1].iPrice = 7000;
+	tStoreArmor[1].iSell = 3500;
+
+	strcpy_s(tStoreArmor[2].strName, "í”Œë ˆì´íŠ¸ì•„ë”");
+	strcpy_s(tStoreArmor[2].strTypeName, "ë°©ì–´êµ¬");
+	strcpy_s(tStoreArmor[2].strDesc, "ê°•ì² ë¡œ ë§Œë“  íŒê¸ˆê°‘ì˜·");
+	tStoreArmor[2].eType = IT_ARMOR;
+	tStoreArmor[2].iMin = 70;
+	tStoreArmor[2].iMax = 90;
+	tStoreArmor[2].iPrice = 10000;
+	tStoreArmor[2].iSell = 15000;
 
 	while (true) {
 		system("cls");
 		cout << "--------------- LOBY --------------" << endl;
-		cout << "1. ¸Ê" << endl;
-		cout << "2. »óÁ¡" << endl;
-		cout << "3. °¡¹æ" << endl;
-		cout << "4. Á¾·á" << endl;
-		cout << "¸Ş´º¸¦ ¼±ÅÃÇÏ¼¼¿ä : ";
+		cout << "ë©”ë‰´ë¥¼ ì„ íƒí•˜ì„¸ìš”." << endl;
+		cout << "1. ë§µ\t";
+		cout << "2. ìƒì \t";
+		cout << "3. ê°€ë°©\t";
+		cout << "4. ì¢…ë£Œ" << endl;
+		
 		int iMenu;
 		cin >> iMenu;
 
@@ -307,11 +390,12 @@ int main() {
 			{
 				system("cls");
 				cout << "--------------- MAP --------------" << endl;
-				cout << "1. ½¬¿ò" << endl;
-				cout << "2. º¸Åë" << endl;
-				cout << "3. ¾î·Á¿ò" << endl;
-				cout << "4. µÚ·Î°¡±â" << endl;
-				cout << "¸ÊÀ» ¼±ÅÃÇÏ¼¼¿ä : ";
+				cout << "ë§µì„ ì„ íƒí•˜ì„¸ìš”."<<endl;
+				cout << "1. ì‰¬ì›€\t";
+				cout << "2. ë³´í†µ\t";
+				cout << "3. ì–´ë ¤ì›€\t";
+				cout << "4. ë’¤ë¡œê°€ê¸°" << endl;
+				
 				cin >> iMenu;
 
 				if (cin.fail()) {
@@ -319,13 +403,13 @@ int main() {
 					cin.ignore(1024, '\n');
 					continue;
 				}
-				//ÀÌ if¹®¿¡ ¼ÓÇÑbreak´Â ¸Ê ¸Ş´º¸¦ µ¹·ÁÁÖ±â À§ÇÑ while¿¡ ¼ÓÇØ ÀÖÀ¸¹Ç·Î
-		//ÀÌ while¹®À» ºüÁ®³ª°£´Ù.
+				//ì´ ifë¬¸ì— ì†í•œbreakëŠ” ë§µ ë©”ë‰´ë¥¼ ëŒë ¤ì£¼ê¸° ìœ„í•œ whileì— ì†í•´ ìˆìœ¼ë¯€ë¡œ
+		//ì´ whileë¬¸ì„ ë¹ ì ¸ë‚˜ê°„ë‹¤.
 
 				if (iMenu == MT_BACK) break;
 
-				//¼±ÅÃÇÑ ¸Ş´º¿¡¼­ 1À» »©ÁÖ¸é ¸ó½ºÅÍ ¹è¿­ÀÇ ÀÎµ¦½º°¡ µÈ´Ù.
-		//±×·¸°Ô ÇØ¼­ ÇØ´ç ¸ÊÀÇ ¸ó½ºÅÍ¸¦ »ı¼ºÇØÁØ´Ù
+				//ì„ íƒí•œ ë©”ë‰´ì—ì„œ 1ì„ ë¹¼ì£¼ë©´ ëª¬ìŠ¤í„° ë°°ì—´ì˜ ì¸ë±ìŠ¤ê°€ ëœë‹¤.
+		//ê·¸ë ‡ê²Œ í•´ì„œ í•´ë‹¹ ë§µì˜ ëª¬ìŠ¤í„°ë¥¼ ìƒì„±í•´ì¤€ë‹¤
 				_Monster tMonster = tMonsterArr[iMenu - 1];
 
 				while (true) {
@@ -340,36 +424,62 @@ int main() {
 					case MT_HARD:
 						cout << "--------------- HARD --------------" << endl; break;
 					}
-					//ÇÃ·¹ÀÌ¾î Á¤º¸ Ãâ·Â
+					//í”Œë ˆì´ì–´ ì •ë³´ ì¶œë ¥
 					
-					cout << "ÀÌ¸§ : " << tPlayer.strName << endl;
-					cout << "\tÁ÷¾÷ : " << tPlayer.strJobName << endl;
-					cout << "·¹º§ : " << tPlayer.iLevel << "\t°æÇèÄ¡ : " <<
+					cout << "ì´ë¦„ : " << tPlayer.strName << endl;
+					cout << "\tì§ì—… : " << tPlayer.strJobName << endl;
+					cout << "ë ˆë²¨ : " << tPlayer.iLevel << "\tê²½í—˜ì¹˜ : " <<
 						tPlayer.iExp << endl;
-					cout << "°ø°İ·Â : " << tPlayer.iAttackMin << " - " <<
-						tPlayer.iAttackMin << " - " <<
-						tPlayer.iAttackMax << "\t¹æ¾î·Â : " << tPlayer.iArmorMin <<
-						" - " << tPlayer.iArmorMax << endl;
-					cout << "Ã¼·Â : " << tPlayer.iHP << " / " << tPlayer.iHPMax << endl;
-					cout << "¸¶³ª : " << tPlayer.iMP << " / " << tPlayer.iMPMax << endl;
-					cout << "º¸À¯°ñµå : " << tPlayer.tInventory.iGold << " Gold" << endl << endl;
+					
+					//ë¬´ê¸°ë¥¼ ì¥ì°©í•˜ê³  ìˆì„ ê²½ìš° ê³µê²©ë ¥ì— ë¬´ê¸°ê³µê²©ë ¥ì„ ì¶”ê°€í•˜ì—¬ ì¶œë ¥í•œë‹¤.
+					if(tPlayer.bEquip[EQ_WEAPON]==true){
+						cout << "ê³µê²©ë ¥ : " << tPlayer.iAttackMin << " + " <<
+							tPlayer.tEquip[EQ_WEAPON].iMin << " - " <<
+							tPlayer.iAttackMax << " + " << tPlayer.tEquip[EQ_WEAPON].iMax;
+					}
+					else {
+						cout << "ê³µê²©ë ¥ : " << tPlayer.iAttackMin << " - " <<
+							tPlayer.iAttackMax;
+					}
 
-					//¸ó½ºÅÍ Á¤º¸ Ãâ·Â
+					//ë°©ì–´êµ¬ë¥¼ ì¥ì°©í•˜ê³  ìˆì„ ê²½ìš° ë°©ì–´ë ¥ì— ë°©ì–´êµ¬ ë°©ì–´ë ¥ì„ ì¶”ê°€í•˜ì—¬ ì¶œë ¥í•œë‹¤.
+					if (tPlayer.bEquip[EQ_ARMOR] == true) {
+						cout << "\të°©ì–´ë ¥ : " << tPlayer.iArmorMin << " - " <<
+							tPlayer.iArmorMax << " + " << tPlayer.tEquip[EQ_WEAPON].iMax;
+					}
+					else {
+						cout << "\të°©ì–´ë ¥ : " << tPlayer.iArmorMin << " - " <<
+							tPlayer.iArmorMax<<endl;
+					}
+
+					cout << "ì²´ë ¥ : " << tPlayer.iHP << " / " << tPlayer.iHPMax << endl;
+					cout << "ê²Œì´ì§€ : " << tPlayer.iMP << " / " << tPlayer.iMPMax << endl;
+
+					if (tPlayer.bEquip[EQ_WEAPON])
+						cout << "ì¥ì°©ë¬´ê¸° : " << tPlayer.tEquip[EQ_WEAPON].strName;
+
+					else
+						cout << "ì¥ì°© ë¬´ê¸° : ì—†ìŒ       ";
+
+					cout << "ë³´ìœ ê³¨ë“œ : " << tPlayer.tInventory.iGold << " Gold" << endl << endl;
+
+					//ëª¬ìŠ¤í„° ì •ë³´ ì¶œë ¥
 					cout << "---------------MONSTER---------------" << endl;
-					cout << "ÀÌ¸§ : " << tMonster.strName << "\t·¹º§ : " <<
+					cout << "ì´ë¦„ : " << tMonster.strName << "\të ˆë²¨ : " <<
 						tPlayer.iLevel << endl;
-					cout << "°ø°İ·Â : " << tMonster.iAttackMin << " - " <<
+					cout << "ê³µê²©ë ¥ : " << tMonster.iAttackMin << " - " <<
 						tMonster.iAttackMin << " - " <<
-						tMonster.iAttackMax << "\t¹æ¾î·Â : " << tMonster.iArmorMin <<
+						tMonster.iAttackMax << "\të°©ì–´ë ¥ : " << tMonster.iArmorMin <<
 						" - " << tMonster.iArmorMax << endl;
-					cout << "Ã¼·Â : " << tMonster.iHP << " / " << tMonster.iHPMax << endl;
-					cout << "¸¶³ª : " << tMonster.iMP << " / " << tMonster.iMPMax << endl;
-					cout << "È¹µæ°æÇèÄ¡ : " << tMonster.iExp << "\tÈ¹µæ°ñµå : " <<
+					cout << "ì²´ë ¥ : " << tMonster.iHP << " / " << tMonster.iHPMax << endl;
+					cout << "ë§ˆë‚˜ : " << tMonster.iMP << " / " << tMonster.iMPMax << endl;
+					cout << "íšë“ê²½í—˜ì¹˜ : " << tMonster.iExp << "\tíšë“ê³¨ë“œ : " <<
 						tMonster.iGoldMin << " - " << tMonster.iGoldMax << endl<<endl;
 
-					cout << "1. °ø°İ" << endl;
-					cout << "2. µµ¸Á°¡±â" << endl;
-					cout << "¸Ş´º¸¦ ¼±ÅÃÇÏ¼¼¿ä : ";
+					cout << "1. ê³µê²©" << endl;
+					cout << "2. ë„ë§ê°€ê¸°" << endl;
+					cout << "3. ìŠ¤í‚¬" << endl;
+					cout << "ë©”ë‰´ë¥¼ ì„ íƒí•˜ì„¸ìš” : ";
 					cin >> iMenu;
 
 					if (cin.fail()) {
@@ -384,45 +494,45 @@ int main() {
 					{
 					case BATTLE_ATTACK:
 					{
-						//¿¹¸¦ µé¾î Min 5 Max 15°¡Á¤°æ¿ì 
-						//15 - 5+1À» ÇÏ¸é 11ÀÌ µÈ´Ù. 11·Î ³ª´« ³ª¸ÓÁö´Â 0 ~10ÀÌ
-						//³ª¿À°Ô µÇ°í ¿©±â¿¡ Min°ªÀÎ 5¸¦ ´õÇÏ°Ô µÇ¸é
-						//+1À» ÇØ¼­ 5~15»çÀÌ·Î °ªÀÌ ³ª¿À°Ô µÇ´Â°ÍÀÌ´Ù
+						//ì˜ˆë¥¼ ë“¤ì–´ Min 5 Max 15ê°€ì •ê²½ìš° 
+						//15 - 5+1ì„ í•˜ë©´ 11ì´ ëœë‹¤. 11ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€ëŠ” 0 ~10ì´
+						//ë‚˜ì˜¤ê²Œ ë˜ê³  ì—¬ê¸°ì— Minê°’ì¸ 5ë¥¼ ë”í•˜ê²Œ ë˜ë©´
+						//+1ì„ í•´ì„œ 5~15ì‚¬ì´ë¡œ ê°’ì´ ë‚˜ì˜¤ê²Œ ë˜ëŠ”ê²ƒì´ë‹¤
 						int iAttack = rand() % (tPlayer.iAttackMax - tPlayer.iAttackMin + 1) +
 							tPlayer.iAttackMin;
 						int iArmor = rand() % (tMonster.iArmorMax - tMonster.iArmorMin + 1) +
 							tMonster.iArmorMin;
 
 						int iDamage = iAttack - iArmor;
-						// »ïÇ×¿¬»êÀÚ : Á¶°Ç½Ä ? trueÀÏ¶§°ª : falseÀÏ¶§°ª;
+						// ì‚¼í•­ì—°ì‚°ì : ì¡°ê±´ì‹ ? trueì¼ë•Œê°’ : falseì¼ë•Œê°’;
 						iDamage = iDamage < 1 ? 1 : iDamage;
 
 						/*if (iDamage < 1)
 							iDamage = 1;*/
 
-						//¸ó½ºÅÍ HP¸¦ °¨¼Ò½ÃÅ²´Ù.
+						//ëª¬ìŠ¤í„° HPë¥¼ ê°ì†Œì‹œí‚¨ë‹¤.
 						tMonster.iHP -= iDamage;
-						cout << tPlayer.strName << " °¡ " << tMonster.strName <<
-							"¿¡°Ô " << iDamage << " ÇÇÇØ¸¦ ÀÔÇû½À´Ï´Ù." << endl;
+						cout << tPlayer.strName << " ê°€ " << tMonster.strName <<
+							"ì—ê²Œ " << iDamage << " í”¼í•´ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤." << endl;
 
-						//¸ó½ºÅÍ°¡ Á×¾úÀ» °æ¿ì¸¦ Ã³¸®ÇÑ´Ù.
+						//ëª¬ìŠ¤í„°ê°€ ì£½ì—ˆì„ ê²½ìš°ë¥¼ ì²˜ë¦¬í•œë‹¤.
 						if (tMonster.iHP <= 0) {
-							cout << tMonster.strName << " ¸ó½ºÅÍ°¡ »ç¸ÁÇÏ¿´½À´Ï´Ù." << endl;
+							cout << tMonster.strName << " ëª¬ìŠ¤í„°ê°€ ì‚¬ë§í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
 
 							tPlayer.iExp += tMonster.iExp;
 							int iGold = (rand() % (tMonster.iGoldMax - tMonster.iGoldMin + 1) +
 								tMonster.iGoldMin);
 							tPlayer.tInventory.iGold += iGold;
 
-							cout << tMonster.iExp << " °æÇèÄ¡¸¦ È¹µæÇÏ¿´½À´Ï´Ù. " << endl;
-							cout << iGold << " Gold¸¦ È¹µæÇÏ¿´½À´Ï´Ù." << endl;
+							cout << tMonster.iExp << " ê²½í—˜ì¹˜ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤. " << endl;
+							cout << iGold << " Goldë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
 
 							tMonster.iHP = tMonster.iHPMax;
 							tMonster.iMP = tMonster.iMPMax;
 							system("pause");
 							break;
 						}
-						// ¸ó½ºÅÍ°¡ »ì¾ÆÀÖ´Ù¸é ÇÃ·¹ÀÌ¾î¸¦ °ø°İÇÑ´Ù.
+						// ëª¬ìŠ¤í„°ê°€ ì‚´ì•„ìˆë‹¤ë©´ í”Œë ˆì´ì–´ë¥¼ ê³µê²©í•œë‹¤.
 						iAttack = rand() % (tMonster.iAttackMax - tMonster.iAttackMin + 1) +
 							tMonster.iAttackMin;
 						iArmor = rand() % (tPlayer.iArmorMax - tPlayer.iArmorMin + 1) +
@@ -430,7 +540,7 @@ int main() {
 
 
 						iDamage = iAttack - iArmor;
-						// »ïÇ×¿¬»êÀÚ : Á¶°Ç½Ä ? trueÀÏ¶§°ª : falseÀÏ¶§°ª;
+						// ì‚¼í•­ì—°ì‚°ì : ì¡°ê±´ì‹ ? trueì¼ë•Œê°’ : falseì¼ë•Œê°’;
 						iDamage = iDamage < 1 ? 1 : iDamage;
 
 
@@ -440,11 +550,11 @@ int main() {
 
 						tPlayer.iHP -= iDamage;
 
-						cout << tMonster.strName << " °¡ " << tPlayer.strName <<
-							"¿¡°Ô " << iDamage << " ÇÇÇØ¸¦ ÀÔÇû½À´Ï´Ù." << endl;
+						cout << tMonster.strName << " ê°€ " << tPlayer.strName <<
+							"ì—ê²Œ " << iDamage << " í”¼í•´ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤." << endl;
 
 						if (tPlayer.iHP <= 0) {
-							cout << tPlayer.strName << " ÇÃ·¹ÀÌ¾î°¡ »ç¸ÁÇÏ¿´½À´Ï´Ù." << endl;
+							cout << tPlayer.strName << " í”Œë ˆì´ì–´ê°€ ì‚¬ë§í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
 						
 							int iExp = tPlayer.iExp * 0.1f;
 							int iGold = tPlayer.tInventory.iGold * 0.1f;
@@ -452,10 +562,10 @@ int main() {
 							tPlayer.iExp -= iExp;
 							tPlayer.tInventory.iGold -= iGold;
 
-							cout << iExp << " °æÇèÄ¡¸¦ ÀÒ¾ú½À´Ï´Ù." << endl;
-							cout << iGold << " Gold¸¦ ÀÒ¾ú½À´Ï´Ù." << endl;
+							cout << iExp << " ê²½í—˜ì¹˜ë¥¼ ìƒì—ˆìŠµë‹ˆë‹¤." << endl;
+							cout << iGold << " Goldë¥¼ ìƒì—ˆìŠµë‹ˆë‹¤." << endl;
 
-							//ÇÃ·¹ÀÌ¾îÀÇ HP ¿Í MP¸¦ È¸º¹ÇÑ´Ù.
+							//í”Œë ˆì´ì–´ì˜ HP ì™€ MPë¥¼ íšŒë³µí•œë‹¤.
 							tPlayer.iHP = tPlayer.iHPMax;
 							tPlayer.iMP = tPlayer.iMPMax;
 
@@ -471,10 +581,10 @@ int main() {
 			{
 				system("cls");
 				cout << "---------------STORE---------------" << endl;
-				cout << "1. ¹«±â»óÁ¡" << endl;
-				cout << "2. ¹æ¾î±¸»óÁ¡" << endl;
-				cout << "3. µÚ·Î°¡±â" << endl;
-				cout << "»óÁ¡À» ¼±ÅÃÇÏ¼¼¿ä : ";
+				cout << "1. ë¬´ê¸°ìƒì " << endl;
+				cout << "2. ë°©ì–´êµ¬ìƒì " << endl;
+				cout << "3. ë’¤ë¡œê°€ê¸°" << endl;
+				cout << "ìƒì ì„ ì„ íƒí•˜ì„¸ìš” : ";
 				cin >> iMenu;
 
 				if (cin.fail()) {
@@ -488,22 +598,23 @@ int main() {
 				case SM_WEAPON:
 					while (true) {
 						system("cls");
-						cout << "--------------- ARMOR_STORE---------------" << endl;
-						//ÆÇ¸Å¸ñ·ÏÀ» º¸¿©ÁØ´Ù
-						for (int i = 0; i < STORE_WEAPON_MAX; i++)
+						cout << "--------------- ë¬´ê¸°ìƒì ---------------" << endl;
+						//íŒë§¤ëª©ë¡ì„ ë³´ì—¬ì¤€ë‹¤
+						for (int i = 0; i < STORE_WEAPON_MAX; ++i)
 						{
-							cout << i + 1 << ". ÀÌ¸§ : " << tStoreWeapon[i].strName << 
-								"\tÁ¾·ù : " << tStoreWeapon[i].strTypeName << endl;
-							cout << "°ø°İ·Â : " << tStoreWeapon[i].iMin << " - " << tStoreWeapon[i].iMax << endl;
-							cout << "ÆÇ¸Å°¡°İ : " << tStoreWeapon[i].iPrice << 
-								"\t±¸¸Å°¡°İ : " << tStoreWeapon[i].iSell << endl;
-							cout << "¼³¸í : " << tStoreWeapon[i].strDesc << endl << endl;
+							cout << i + 1 << ". ì´ë¦„ : " << tStoreWeapon[i].strName << 
+								"\tì¢…ë¥˜ : " << tStoreWeapon[i].strTypeName << endl;
+							cout << "ê³µê²©ë ¥ : " << tStoreWeapon[i].iMin << " - " 
+								<< tStoreWeapon[i].iMax << endl;
+							cout << "íŒë§¤ê°€ê²© : " << tStoreWeapon[i].iPrice << 
+								"\têµ¬ë§¤ê°€ê²© : " << tStoreWeapon[i].iSell << endl;
+							cout << "ì„¤ëª… : " << tStoreWeapon[i].strDesc << endl << endl;
 						}
 					
-					cout << STORE_WEAPON_MAX + 1 << ". µÚ·Î°¡±â" << endl;
-					cout << "º¸À¯±İ¾× : " << tPlayer.tInventory.iGold << "Gold" << endl;
-					cout << "³²Àº°ø°£ : " << INVENTORY_MAX - tPlayer.tInventory.iItemCount << endl;
-					cout << "±¸ÀÔÇÒ ¾ÆÀÌÅÛÀ» ¼±ÅÃÇÏ¼¼¿ä : ";
+					cout << STORE_WEAPON_MAX + 1 << ". ë’¤ë¡œê°€ê¸°" << endl;
+					cout << "ë³´ìœ ê¸ˆì•¡ : " << tPlayer.tInventory.iGold << "Gold" << endl;
+					cout << "ë‚¨ì€ê³µê°„ : " << INVENTORY_MAX - tPlayer.tInventory.iItemCount << endl;
+					cout << "êµ¬ì…í•  ì•„ì´í…œì„ ì„ íƒí•˜ì„¸ìš” : ";
 					cin >> iMenu;
 
 					if (cin.fail()) {
@@ -512,72 +623,207 @@ int main() {
 					}
 					else if (iMenu == STORE_WEAPON_MAX + 1)
 						break;
+
 					else if (iMenu<1 || iMenu > STORE_WEAPON_MAX + 1) {
-						cout << "Àß¸ø ¼±ÅÃÇÏ¿´½À´Ï´Ù." << endl;
+						cout << "ì˜ëª» ì„ íƒí•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
 						system("pause");
 						continue;
 					}
-					//»óÁ¡ ÆÇ¸Å¸ñ·Ï ¹è¿­ÀÇ ÀÎµ¦½º¸¦ ±¸ÇØÁØ´Ù.
+					//ìƒì  íŒë§¤ëª©ë¡ ë°°ì—´ì˜ ì¸ë±ìŠ¤ë¥¼ êµ¬í•´ì¤€ë‹¤.
 					int iWeaponIndex = iMenu - 1;
 
-					//ÀÎº¥Åä¸®°¡ ²ËÃ¡´ÂÁö °Ë»çÇÑ´Ù.
-					if (tPlayer.tInventory.iItemCount == INVENTORY_MAX) {
-
-						cout << "°¡¹æÀÌ ²Ë Ã¡½À´Ï´Ù." << endl;
+					//ì¸ë²¤í† ë¦¬ê°€ ê½‰ì°¼ëŠ”ì§€ ê²€ì‚¬í•œë‹¤.
+					if (tPlayer.tInventory.iItemCount == INVENTORY_MAX) 
+					{
+						cout << "ê°€ë°©ì´ ê½‰ ì°¼ìŠµë‹ˆë‹¤." << endl;
 						system("pause");
 						continue;
 					}
-					
-
+		
+					//ëˆì´ ë¶€ì¡±í•  ê²½ìš°
 					else if (tPlayer.tInventory.iGold < tStoreWeapon[iWeaponIndex].iPrice) {
-						cout << "º¸À¯±İÀÌ ºÎÁ·ÇÕ´Ï´Ù." << endl;
+						cout << "ë³´ìœ ê¸ˆì´ ë¶€ì¡±í•©ë‹ˆë‹¤." << endl;
 						system("pause");
 						continue;
 					}
-					//Ã³À½¿¡ iItemCount´Â ÇÏ³ªµµ Ãß°¡µÇ¾î ÀÖÁö ¾Ê±â ¶§¹®¿¡ 0À¸·Î ÃÊ±âÈ­
-					//µÇ¾îÀÖÀ¸¹Ç·Î 0¹ø ÀÎµ¦½º¿¡ ±¸¸ÅÇÑ ¾ÆÀÌÅÛÀ» Ãß°¡ÇÏ°Ô µÈ´Ù. ±×¸®°í
-					//Ä«¿îÆ®°¡ 1ÀÌ µÈ´Ù. ´ÙÀ½¹ø¿¡ Ãß°¡ÇÒ ¶§´Â 1¹ø ÀÎµ¦½º¿¡ Ãß°¡ÇÏ°Ô µÈ´Ù.
+					//ì²˜ìŒì— iItemCountëŠ” í•˜ë‚˜ë„ ì¶”ê°€ë˜ì–´ ìˆì§€ ì•Šê¸° ë•Œë¬¸ì— 0ìœ¼ë¡œ ì´ˆê¸°í™”
+					//ë˜ì–´ìˆìœ¼ë¯€ë¡œ 0ë²ˆ ì¸ë±ìŠ¤ì— êµ¬ë§¤í•œ ì•„ì´í…œì„ ì¶”ê°€í•˜ê²Œ ëœë‹¤. ê·¸ë¦¬ê³ 
+					//ì¹´ìš´íŠ¸ê°€ 1ì´ ëœë‹¤. ë‹¤ìŒë²ˆì— ì¶”ê°€í•  ë•ŒëŠ” 1ë²ˆ ì¸ë±ìŠ¤ì— ì¶”ê°€í•˜ê²Œ ëœë‹¤.
 					tPlayer.tInventory.tItem[tPlayer.tInventory.iItemCount] =
 						tStoreWeapon[iWeaponIndex];
 					++tPlayer.tInventory.iItemCount;
 
-					//°ñµå¸¦ Â÷°¨ÇÑ´Ù.
+					//ê³¨ë“œë¥¼ ì°¨ê°í•œë‹¤.
 					tPlayer.tInventory.iGold -= tStoreWeapon[iWeaponIndex].iPrice;
 
-					cout << tStoreWeapon[iWeaponIndex].strName << "¾ÆÀÌÅÛÀ» ±¸¸ÅÇÏ¿´½À´Ï´Ù." << endl;
+					cout << tStoreWeapon[iWeaponIndex].strName << " ì•„ì´í…œì„ êµ¬ë§¤í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
 					system("pause");
 				}
 				break;
 				case SM_ARMOR: 
-					break;
+					while (true)
+					{
+						system("cls");
+						cout << "------------ ë°©ì–´êµ¬ìƒì  ------------" << endl;
 
+						//íŒë§¤ ëª©ë¡ì„ ë³´ì—¬ì¤€ë‹¤.
+						for (int i = 0; i < STORE_ARMOR_MAX; ++i) {
+							cout << i + 1 << ". ì´ë¦„ : " << tStoreArmor[i].strName <<
+								"\tì¢…ë¥˜ : " << tStoreArmor[i].strTypeName << endl;
+							cout << "ê³µê²©ë ¥ : " << tStoreArmor[i].iMin << " - " <<
+								tStoreArmor[i].iMax << endl;
+							cout << "íŒë§¤ê°€ê²© : " << tStoreArmor[i].iPrice <<
+								"\têµ¬ë§¤ê°€ê²© : " << tStoreArmor[i].iSell << endl;
+							cout << "ì„¤ëª… : " << tStoreArmor[i].strDesc << endl << endl;
+						}
+						cout << STORE_ARMOR_MAX + 1 << ". ë’¤ë¡œê°€ê¸°" << endl;
+						cout << "ë³´ìœ ê¸ˆì•¡ : " << tPlayer.tInventory.iGold << " Gold" << endl;
+						cout << "ë‚¨ì€ê³µê°„ : " << INVENTORY_MAX - tPlayer.tInventory.iItemCount << endl;
+							cout << "êµ¬ì…í•  ì•„ì´í…œì„ ì„ íƒí•˜ì„¸ìš” : ";
+							cin >> iMenu;
+
+							if (cin.fail()) {
+								cin.ignore(1024, '\n');
+								continue;
+							}
+							else if (iMenu == STORE_ARMOR_MAX + 1)
+								break;
+
+							else if (iMenu<1 || iMenu > STORE_ARMOR_MAX + 1) {
+								cout << "ì˜ëª» ì„ íƒí•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+								system("pause");
+								continue;
+							}
+
+							//ìƒì  íŒë§¤ëª©ë¡ ë°°ì—´ì˜ ì¸ë±ìŠ¤ë¥¼ êµ¬í•´ì¤€ë‹¤.
+							int iArmorIndex = iMenu - 1;
+
+							//ì¸ë²¤í† ë¦¬ê°€ ê½‰ì°¼ëŠ”ì§€ ê²€ì‚¬í•œë‹¤.
+							if (tPlayer.tInventory.iItemCount == INVENTORY_MAX)
+							{
+								cout << "ê°€ë°©ì´ ê½‰ ì°¼ìŠµë‹ˆë‹¤." << endl;
+								system("pause");
+								continue;
+							}
+
+							//ëˆì´ ë¶€ì¡±í•  ê²½ìš°
+							else if (tPlayer.tInventory.iGold < tStoreArmor[iArmorIndex].iPrice) {
+								cout << "ë³´ìœ ê¸ˆì´ ë¶€ì¡±í•©ë‹ˆë‹¤." << endl;
+								system("pause");
+								continue;
+							}
+							//ì²˜ìŒì— iItemCountëŠ” í•˜ë‚˜ë„ ì¶”ê°€ë˜ì–´ ìˆì§€ ì•Šê¸° ë•Œë¬¸ì— 0ìœ¼ë¡œ ì´ˆê¸°í™”
+							//ë˜ì–´ìˆìœ¼ë¯€ë¡œ 0ë²ˆ ì¸ë±ìŠ¤ì— êµ¬ë§¤í•œ ì•„ì´í…œì„ ì¶”ê°€í•˜ê²Œ ëœë‹¤. ê·¸ë¦¬ê³ 
+							//ì¹´ìš´íŠ¸ê°€ 1ì´ ëœë‹¤. ë‹¤ìŒë²ˆì— ì¶”ê°€í•  ë•ŒëŠ” 1ë²ˆ ì¸ë±ìŠ¤ì— ì¶”ê°€í•˜ê²Œ ëœë‹¤.
+							tPlayer.tInventory.tItem[tPlayer.tInventory.iItemCount] =
+								tStoreArmor[iArmorIndex];
+							++tPlayer.tInventory.iItemCount;
+
+							//ê³¨ë“œë¥¼ ì°¨ê°í•œë‹¤.
+							tPlayer.tInventory.iGold -= tStoreWeapon[iArmorIndex].iPrice;
+
+							cout << tStoreArmor[iArmorIndex].strName << " ì•„ì´í…œì„ êµ¬ë§¤í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+							system("pause");
+					}
+					break;
 				}
 			}
 			break;
 		case MM_INVENTORY:
-			cout << "--------------- BAG --------------" << endl;
-			cout << "---------------INFORMATION---------------" << endl;
-			cout << "ÀÌ¸§ : " << tPlayer.strName << endl;
-			cout << "Á÷¾÷ : " << tPlayer.strJobName << endl;
-			cout << "·¹º§ : " << tPlayer.iLevel << endl;
-			cout << "°ø°İ·Â : " << tPlayer.iAttackMin << endl;
-			cout << "¹æ¾î·Â : " << tPlayer.iArmorMax << endl;
-			cout << "Ã¼·Â : " << tPlayer.iHP << " / " << tPlayer.iHPMax << endl;
-			cout << "¸¶³ª : " << tPlayer.iMP << " / " << tPlayer.iMPMax << endl;
-			cout << "º¸À¯°ñµå : " << tPlayer.tInventory.iGold << " Gold" << endl;
-			for (int i = 0; tPlayer.tInventory.iItemCount; i++) {
-				cout << i + 1 << "ÀÌ¸§ : " << tPlayer.tInventory.tItem[i].strName << 
-					"\tÁ¾·ù : " << tPlayer.tInventory.tItem[i].strTypeName << endl;
-				cout << "°ø°İ·Â : " << tPlayer.tInventory.tItem[i].iMin << " - " << tPlayer.tInventory.tItem[i].iMax << endl;
-				cout << "ÆÇ¸Å°¡°İ : " << tPlayer.tInventory.tItem[i].iPrice << 
-					"\t±¸¸Å°¡°İ : " << tPlayer.tInventory.tItem[i].iSell << endl;
-				cout << "¼³¸í : " << tStoreWeapon[i].strDesc << endl << endl;
-			}
+			while (true)	//?
+			{
 
-			system("pause");
+				system("cls");
+				cout << "--------------- BAG --------------" << endl;
+				
+				/*cout << "ì´ë¦„ : " << tPlayer.strName << "\tì§ì—… : " <<
+					tPlayer.strJobName << endl;
+				cout << "ë ˆë²¨ : " << tPlayer.iLevel << "Lv"<< "\tê²½í—˜ì¹˜ : " <<
+					tPlayer.iExp << endl;
+				cout << "ê³µê²©ë ¥ : " << tPlayer.iAttackMin << " - " <<
+					tPlayer.iAttackMax << "\të°©ì–´ë ¥ : " << tPlayer.iArmorMin << 
+					" - " << tPlayer.iArmorMax << endl;*/
+
+				cout << "ì²´ë ¥ : " << tPlayer.iHP << " / " << tPlayer.iHPMax <<
+					"\të§ˆë‚˜ : " << tPlayer.iMP << " / " << tPlayer.iMPMax << endl;
+				cout << "ë³´ìœ ê³¨ë“œ : " << tPlayer.tInventory.iGold << " Gold" << endl << endl;
+
+				for (int i = 0; i<tPlayer.tInventory.iItemCount; i++) {
+					cout << i + 1 << ". ì´ë¦„ : " << tPlayer.tInventory.tItem[i].strName <<
+						"\tì¢…ë¥˜ : " << tPlayer.tInventory.tItem[i].strTypeName << endl;
+					cout << "ê³µê²©ë ¥ : " << tPlayer.tInventory.tItem[i].iMin << " - "
+						<< tPlayer.tInventory.tItem[i].iMax << endl;
+					cout << "íŒë§¤ê°€ê²© : " << tPlayer.tInventory.tItem[i].iPrice <<
+						"\têµ¬ë§¤ê°€ê²© : " << tPlayer.tInventory.tItem[i].iSell << endl;
+					cout << "ì„¤ëª… : " << tPlayer.tInventory.tItem[i].strDesc << endl << endl;
+				}
+				
+				
+				cout << tPlayer.tInventory.iItemCount + 1 << ". ë’¤ë¡œê°€ê¸°" << endl;
+				cout << "ì¥ì°©í•  ì•„ì´í…œì„ ì„ íƒí•˜ì„¸ìš” : ";
+				cin >> iMenu;
+
+				if (cin.fail()) {
+					cin.clear();
+					cin.ignore(1024, '\n');
+					continue;
+				}
+
+				else if (iMenu == tPlayer.tInventory.iItemCount + 1)
+					break;
+
+				else if (iMenu<1 || iMenu > tPlayer.tInventory.iItemCount + 1) {
+
+
+					cout << "ì˜ëª» ì„ íƒí•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+					system("pause");
+					continue;
+				}
+				//ì•„ì´í…œ ì¸ë±ìŠ¤ë¥¼ êµ¬í•´ì¤€ë‹¤.
+				int idx = iMenu - 1;
+
+				//ì œëŒ€ë¡œ ì„ íƒí–ˆì„ ê²½ìš° í•´ë‹¹ ì•„ì´í…œì˜ ì¢…ë¥˜ì— ë”°ë¼ ì¥ì°© ë¶€ìœ„ë¥¼ ê²°ì •
+			
+
+				EQUIP eq;
+
+
+				switch (tPlayer.tInventory.tItem[idx].eType) {
+				case IT_WEAPON:
+					eq = EQ_WEAPON;
+						break;
+				case IT_ARMOR:
+					eq = EQ_ARMOR;
+					break;
+				}
+				//ì•„ì´í…œì´ ì¥ì°©ë˜ì–´ ìˆì„ê²½ìš° ì¥ì°©ë˜ì–´ìˆëŠ” ì•„ì´í…œê³¼ ì¥ì°©í•  ì•„ì´í…œì„ 
+				//êµì²´í•´ ì£¼ì–´ì•¼í•œë‹¤. Swap  ì•Œê³ ë¦¬ì¦˜ì„ í™œìš©í•œë‹¤.
+				if (tPlayer.bEquip[eq] == true) 
+				{
+					_Item tSwap = tPlayer.tEquip[eq];
+					tPlayer.tEquip[eq] = tPlayer.tInventory.tItem[idx];
+					tPlayer.tInventory.tItem[idx] = tSwap;
+				}
+
+				//ì¥ì°©ë˜ì–´ìˆì§€ ì•Šì„ ê²½ìš° ì¸ë²¤í† ë¦¬ ì•„ì´í…œì„ ì¥ì°©ì°½ìœ¼ë¡œ ì˜®ê¸°ë¡œ
+				//ì¸ë²¤í† ë¦¬ëŠ” 1ì¹¸ ë¹„ì›Œì§€ê²Œ ëœë‹¤.
+				else {
+					tPlayer.tEquip[eq] = tPlayer.tInventory.tItem[idx];
+
+					for (int i = idx; i < tPlayer.tInventory.iItemCount - 1; ++i) {
+						tPlayer.tInventory.tItem[i] = tPlayer.tInventory.tItem[i + 1];
+					}
+					--tPlayer.tInventory.iItemCount;
+
+					//ì¥ì°©ì„ í–ˆê¸° ë•Œë¬¸ì— trueë¡œ ë§Œë“¤ì–´ì¤€ë‹¤.
+					tPlayer.bEquip[eq] = true;
+				}
+				cout << tPlayer.tEquip[eq].strName << "ì•„ì´í…œì„ ì¥ì°©í•˜ì˜€ìŠµë‹ˆë‹¤." << endl;
+				system("pause");
+			}
 			break;
 		default:
-			cout << "Àß ¸ø¼±ÅÃÇÏ¼Ì½À´Ï´Ù." << endl;
+			cout << "ì˜ ëª»ì„ íƒí•˜ì…¨ìŠµë‹ˆë‹¤." << endl;
 			break;
 			}
 		}
