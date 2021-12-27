@@ -14,9 +14,8 @@ int main() {
 	pair<multimap<string, int>::iterator, multimap<string, int>::iterator>ppp;
 
 	ppp = m.equal_range("b");
-	for (ii = m.begin(); ii != m.end(); ii++)
+	for (ii = ppp.first; ii != ppp.second; ii++)		//포인터에서의 처음부터는 first
 	{
-		cout << ((*ii).first) << " " << ((*ii).second) << endl;	//key value 값 출력
-		cout << m.count("a") << endl;	//value값 개수 출력 
+		cout <<ii->first << " " << ((*ii).second) << endl;	//key value 값 출력
 	}
 }
